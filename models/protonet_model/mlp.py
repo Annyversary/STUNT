@@ -38,7 +38,13 @@ class MLPProto(nn.Module):
     # Definition der Forward-Methode für den Forward Pass des Netzwerks
     # Diese Methode beschreibt, wie die Eingaben durch die Netzwerk-Schichten fließen.
     def forward(self, inputs):
-        # Umformen der Eingaben und Durchlaufen des Encoders
+        # Formt die Eingaben um. -1 bedeutet, dass die erste Dimension dynamisch bestimmt wird,
+        # während die restlichen Dimensionen beibehalten werden. Diese Umformung ist notwendig, um sicherzustellen,
+        # dass die Daten in der richtigen Form durch die Schichten geleitet werden.
         embeddings = self.encoder(inputs.view(-1, *inputs.shape[2:]))
-        # Umformen der Ausgaben in die gewünschte Form und Rückgabe
+
+        # Formt die Ausgaben (embeddings) um, sodass sie die ersten beiden Dimensionen von inputs behalten
+        # und die restlichen Dimensionen flach darstellen.
+        # *inputs.shape[:2]: Bezieht sich auf die ersten zwei Dimensionen der Eingabeform.
+        # -1: Flacht die restlichen Dimensionen ab, sodass die Ausgaben die gewünschte Form haben.
         return embeddings.view(*inputs.shape[:2], -1)
