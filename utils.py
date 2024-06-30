@@ -16,7 +16,7 @@ from tensorboardX import SummaryWriter
 
 
 class Logger(object):
-    """Reference: https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514"""
+    """Referenz: https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514"""
 
     def __init__(self, fn, ask=True, today=True, rank=0):
         self.rank = rank
@@ -90,7 +90,7 @@ class Logger(object):
 
 
 class AverageMeter(object):
-    """Computes and stores the average and current value"""
+    """Berechnet und speichert den Durchschnitt und den aktuellen Wert"""
 
     def __init__(self):
         self.value = 0
@@ -112,7 +112,7 @@ class AverageMeter(object):
 
 
 class AverageMeterList(object):
-    """Computes and stores the average and current value of layer and bias importance"""
+    """Berechnet und speichert den Durchschnitt und den aktuellen Wert der Schicht- und Bias-Wichtigkeit"""
 
     def __init__(self, list_num):
         self.list_num = list_num
@@ -208,41 +208,31 @@ def cycle(loader):
 
 
 def one_hot(ids, n_class):
-    # ---------------------
-    # author：ke1th
-    # source：CSDN
-    # artical：https://blog.csdn.net/u012436149/article/details/77017832
     """
     ids: (list, ndarray) shape:[batch_size]
     out_tensor:FloatTensor shape:[batch_size, depth]
     """
-
     assert len(ids.shape) == 1, 'the ids should be 1-D'
-
     out_tensor = torch.zeros(len(ids), n_class)
-
     out_tensor.scatter_(1, ids.cpu().unsqueeze(1), 1.)
-
     return out_tensor
 
 
 class _ECELoss(nn.Module):
     """
-    Calculates the Expected Calibration Error of a model.
-    (This isn't necessary for temperature scaling, just a cool metric).
-    The input to this loss is the logits of a model, NOT the softmax scores.
-    This divides the confidence outputs into equally-sized interval bins.
-    In each bin, we compute the confidence gap:
+    Berechnet den Expected Calibration Error eines Modells.
+    Der Input für diesen Verlust ist die Logits eines Modells, NICHT die Softmax-Werte.
+    Dieser teilt die Konfidenzausgaben in gleich große Intervall-Bins.
+    In jedem Bin berechnen wir die Konfidenzlücke:
     bin_gap = | avg_confidence_in_bin - accuracy_in_bin |
-    We then return a weighted average of the gaps, based on the number
-    of samples in each bin
-    See: Naeini, Mahdi Pakdaman, Gregory F. Cooper, and Milos Hauskrecht.
+    Wir geben dann einen gewichteten Durchschnitt der Lücken zurück, basierend auf der Anzahl der Proben in jedem Bin
+    Siehe: Naeini, Mahdi Pakdaman, Gregory F. Cooper und Milos Hauskrecht.
     "Obtaining Well Calibrated Probabilities Using Bayesian Binning." AAAI.
     2015.
     """
     def __init__(self, n_bins=20):
         """
-        n_bins (int): number of confidence interval bins
+        n_bins (int): Anzahl der Konfidenzintervall-Bins
         """
         super(_ECELoss, self).__init__()
         bin_boundaries = torch.linspace(0, 1, n_bins + 1)
@@ -256,7 +246,7 @@ class _ECELoss(nn.Module):
 
         ece = torch.zeros(1, device=logits.device)
         for bin_lower, bin_upper in zip(self.bin_lowers, self.bin_uppers):
-            # Calculated |confidence - accuracy| in each bin
+            # Berechne |confidence - accuracy| in jedem Bin
             in_bin = confidences.gt(bin_lower.item()) * confidences.le(bin_upper.item())
             prop_in_bin = in_bin.float().mean()
             if prop_in_bin.item() > 0:
@@ -285,8 +275,8 @@ def is_dist_avail_and_initialized():
 
 
 class SmoothedValue(object):
-    """Track a series of values and provide access to smoothed values over a
-    window or the global series average.
+    """Verfolgt eine Reihe von Werten und bietet Zugriff auf geglättete Werte über ein
+    Fenster oder den globalen Serien-Durchschnitt.
     """
 
     def __init__(self, window_size=20, fmt=None):
@@ -304,7 +294,7 @@ class SmoothedValue(object):
 
     def synchronize_between_processes(self):
         """
-        Warning: does not synchronize the deque!
+        Warnung: synchronisiert nicht die deque!
         """
         if not is_dist_avail_and_initialized():
             return
@@ -410,7 +400,7 @@ class MetricLogger(object):
             iter_time.update(time.time() - end)
             if i % print_freq == 0 or i == len(iterable) - 1:
                 eta_seconds = iter_time.global_avg * (len(iterable) - i)
-                eta_string = str(datetime.datetime.timedelta(seconds=int(eta_seconds)))
+                eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
                 if torch.cuda.is_available():
                     print(log_msg.format(
                         i, len(iterable), eta=eta_string,
@@ -425,6 +415,6 @@ class MetricLogger(object):
             i += 1
             end = time.time()
         total_time = time.time() - start_time
-        total_time_str = str(datetime.datetime.timedelta(seconds=int(total_time)))
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
         print('{} Total time: {} ({:.4f} s / it)'.format(
             header, total_time_str, total_time / len(iterable)))
