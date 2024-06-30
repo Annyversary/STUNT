@@ -2,24 +2,32 @@ import torch
 
 
 def get_accuracy(prototypes, embeddings, targets):
-    """Compute the accuracy of the prototypical network on the test/query points.
+    """
+    Berechnet die Genauigkeit des Prototypen-Netzwerks auf den Test- oder Abfragepunkten.
+
     Parameters
     ----------
     prototypes : `torch.FloatTensor` instance
-        A tensor containing the prototypes for each class. This tensor has shape
+        Ein Tensor, der die Prototypen für jede Klasse enthält. Dieser Tensor hat die Form
         `(meta_batch_size, num_classes, embedding_size)`.
     embeddings : `torch.FloatTensor` instance
-        A tensor containing the embeddings of the query points. This tensor has
-        shape `(meta_batch_size, num_examples, embedding_size)`.
+        Ein Tensor, der die Einbettungen der Abfragepunkte enthält. Dieser Tensor hat die Form
+        `(meta_batch_size, num_examples, embedding_size)`.
     targets : `torch.LongTensor` instance
-        A tensor containing the targets of the query points. This tensor has
-        shape `(meta_batch_size, num_examples)`.
+        Ein Tensor, der die Zielwerte der Abfragepunkte enthält. Dieser Tensor hat die Form
+        `(meta_batch_size, num_examples)`.
+
     Returns
     -------
     accuracy : `torch.FloatTensor` instance
-        Mean accuracy on the query points.
+        Durchschnittliche Genauigkeit auf den Abfragepunkten.
     """
+    # Berechne die quadratischen Distanzen zwischen den Prototypen und den Einbettungen der Abfragepunkte
     sq_distances = torch.sum((prototypes.unsqueeze(1)
-        - embeddings.unsqueeze(2)) ** 2, dim=-1)
+                              - embeddings.unsqueeze(2)) ** 2, dim=-1)
+
+    # Bestimme die Klasse mit der kleinsten quadratischen Distanz (nächstgelegener Prototyp)
     _, predictions = torch.min(sq_distances, dim=-1)
+
+    # Berechne die Genauigkeit als den Prozentsatz der korrekt vorhergesagten Klassen
     return torch.mean(predictions.eq(targets).float()) * 100.
