@@ -22,7 +22,7 @@ class Income(object):
         self.test_y = np.load('./data/income/ytest.npy')
         # Lade die Validierungsdaten und pseudo-Labels
         self.val_x = np.load('./data/income/val_x.npy')
-        self.val_y = np.load('./data/income/val_y.npy')  # pseudo-Labels für Validierung
+        self.val_y = np.load('./data/income/pseudo_val_y.npy')  # pseudo-Labels für Validierung
         self.test_num_way = test_num_way  # Anzahl der Klassen im Test
         self.test_rng = np.random.RandomState(seed)  # Zufallsgenerator für Test
         self.val_rng = np.random.RandomState(seed)  # Zufallsgenerator für Validierung
@@ -107,7 +107,7 @@ class Income(object):
 
                 while min_count < (self.shot + self.query):
                     # Bestimme die Anzahl der zu maskierenden Spalten
-                    min_col = int(x.shape[1] * 0.2)
+                    min_col = int(x.shape[1] * 0.3)
                     max_col = int(x.shape[1] * 0.5)
                     col = np.random.choice(range(min_col, max_col), 1, replace=False)[0]
                     # Wähle zufällig die Spalten aus, die maskiert werden sollen

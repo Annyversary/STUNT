@@ -70,7 +70,7 @@ def parse_args(default=False):
     # Training Konfigurationen
     # Argument für die Anzahl der Meta-Learning-Außen-Schritte
     parser.add_argument('--outer_steps', help='meta-learning outer-step',
-                        default=10000, type=int)
+                        default=2500, type=int)
 
     # Argument für die Lernrate
     parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
